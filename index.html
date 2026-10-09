@@ -1,263 +1,108 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Taha Chess</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<title>ایکس او ✦ نئون</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;padding:20px 12px 30px;background:#10151f;color:#f4f6fa;font-family:Tahoma,Arial,sans-serif;text-align:center}
-.app{max-width:480px;margin:auto}
-h1{margin:5px;color:#d9edbd;font-size:29px}
-.sub{color:#9baac0;font-size:13px;margin:8px 0 20px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#1b2432;padding:13px;border-radius:13px;margin-bottom:12px}
-#status{font-size:13px;text-align:right}
-.tag{color:#c4e88d;font-size:11px;white-space:nowrap}
-.board{display:grid;grid-template-columns:repeat(8,1fr);width:100%;aspect-ratio:1;border:5px solid #29374a;border-radius:8px;overflow:hidden;direction:ltr;box-shadow:0 12px 35px #0006}
-.square{border:0;margin:0;padding:0;position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1;font-family:Arial,sans-serif;font-size:clamp(27px,8vw,45px);cursor:pointer;touch-action:manipulation;user-select:none}
-.light{background:#e7e2d4}.dark{background:#748c7c}
-.square.selected{background:#e8d36d!important}
-.square.last{background:#baca65}
-.square.hint:after{content:"";position:absolute;width:24%;height:24%;border-radius:50%;background:#253b348c}
-.square.capture:after{content:"";position:absolute;inset:3px;border:4px solid #b34d58;border-radius:50%}
-.piece.white{color:#fff;text-shadow:1px 2px 2px #222,0 0 2px #222}
-.piece.black{color:#20242c;text-shadow:0 1px 1px #fff6}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}
-button.action,select{background:#263346;color:#f5f7fb;border:1px solid #3c4b60;padding:12px 8px;border-radius:11px;font-size:13px;cursor:pointer}
-button.action:active{transform:scale(.98)}
-select{width:100%;margin-top:10px}
-.history{margin-top:14px;background:#1b2432;border-radius:13px;padding:13px;text-align:right}
-.history h3{margin:0 0 8px;font-size:13px;color:#d9edbd}
-#moves{font-size:12px;color:#c1ccda;line-height:2;overflow-wrap:anywhere}
-footer{color:#718096;font-size:11px;margin-top:18px}
+:root{--cy:#22d3ee;--pk:#f472b6;--tx:#e8ecff;--mu:#8b93b8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;font-family:Tahoma,Arial,sans-serif;color:var(--tx);
+background:radial-gradient(circle at 15% 10%,#2b1b5a 0,transparent 45%),radial-gradient(circle at 90% 90%,#0b3b52 0,transparent 45%),#0b1020}
+.wrap{width:100%;max-width:400px}
+h1{text-align:center;font-size:26px;margin:0 0 4px;letter-spacing:1px;text-shadow:0 0 18px #7c6cff}
+h1 span:first-child{color:var(--cy);text-shadow:0 0 14px var(--cy)}h1 span:last-child{color:var(--pk);text-shadow:0 0 14px var(--pk)}
+.sub{text-align:center;color:var(--mu);font-size:13px;margin:0 0 16px}
+.glass{background:#ffffff0d;border:1px solid #ffffff1c;border-radius:26px;padding:16px;backdrop-filter:blur(14px);box-shadow:0 20px 60px #00000060}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#00000040;padding:5px;border-radius:15px;margin-bottom:14px}
+button{font:inherit;cursor:pointer;border:0;color:var(--tx);touch-action:manipulation}
+.modes button{padding:10px;border-radius:11px;background:transparent;color:var(--mu);font-size:14px}
+.modes button.on{background:#ffffff1c;color:var(--tx)}
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;text-align:center}
+.score div{background:#00000030;border-radius:14px;padding:9px 4px;font-size:12px;color:var(--mu);border:1px solid transparent;transition:.2s}
+.score b{display:block;font-size:22px;color:var(--tx);margin-top:2px}
+.score .x b{color:var(--cy)}.score .o b{color:var(--pk)}
+.score .act.x{border-color:var(--cy);box-shadow:0 0 14px #22d3ee50}.score .act.o{border-color:var(--pk);box-shadow:0 0 14px #f472b650}
+.status{text-align:center;font-size:17px;font-weight:bold;min-height:26px;margin-bottom:12px}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cell{aspect-ratio:1;border-radius:20px;background:#ffffff0a;border:1px solid #ffffff18;padding:16px;transition:background .15s,transform .1s,box-shadow .3s}
+.cell:active:not(:disabled){transform:scale(.95)}
+.cell:hover:not(:disabled){background:#ffffff16}
+.cell svg{width:100%;height:100%;overflow:visible}
+.cell path,.cell circle{fill:none;stroke-width:11;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:draw .35s ease forwards}
+.cell .mx{stroke:var(--cy);filter:drop-shadow(0 0 7px var(--cy))}
+.cell .mo{stroke:var(--pk);filter:drop-shadow(0 0 7px var(--pk))}
+@keyframes draw{to{stroke-dashoffset:0}}
+.cell.win{background:#ffffff22;animation:pulse .8s ease-in-out infinite alternate}
+@keyframes pulse{to{box-shadow:0 0 28px #ffffff55;transform:scale(1.04)}}
+.acts{display:flex;gap:8px;margin-top:14px}
+.acts button{flex:1;padding:13px;border-radius:14px;font-size:15px;background:#ffffff14}
+.acts .new{background:linear-gradient(135deg,#6d5dfc,#22d3ee);font-weight:bold}
+.acts button:active{transform:scale(.97)}
 </style>
 </head>
 <body>
-<div class="app">
-<h1>♟ TAHA CHESS</h1>
-<div class="sub">فکر کن، حرکت کن، برنده شو.</div>
-
-<div class="top">
- <div id="status">در حال آماده‌سازی...</div>
- <div class="tag">♛ CHESS ARENA</div>
-</div>
-
-<div class="board" id="board"></div>
-
-<div class="controls">
- <button class="action" onclick="undoMove()">↩️ برگشت حرکت</button>
- <button class="action" onclick="newGame()">🔄 بازی جدید</button>
-</div>
-
-<select id="mode" onchange="newGame()">
- <option value="ai">🤖 بازی با کامپیوتر</option>
- <option value="two">👥 بازی دونفره</option>
-</select>
-
-<div class="history">
- <h3>📜 تاریخچه حرکات</h3>
- <div id="moves">هنوز حرکتی انجام نشده.</div>
-</div>
-<footer>TAHA CHESS · موفق باشی! ♟️</footer>
-</div>
-
+<main class="wrap">
+<h1><span>X</span> ✦ <span>O</span></h1>
+<section class="glass">
+<div class="modes"><button id="m-cpu" class="on">با کامپیوتر 🤖</button><button id="m-two">دو نفره 👥</button></div>
+<div class="score"><div class="x" id="sx">ایکس<b id="vx">۰</b></div><div id="sd">مساوی<b id="vd">۰</b></div><div class="o" id="so"><span id="on">کامپیوتر</span><b id="vo">۰</b></div></div>
+<div class="status" id="st"></div>
+<div class="board" id="bd"></div>
+<div class="acts"><button class="new" id="new">بازی جدید</button><button id="rs">صفر کردن امتیاز</button></div>
+</section>
+</main>
 <script>
-const boardEl=document.getElementById('board');
-const statusEl=document.getElementById('status');
-const movesEl=document.getElementById('moves');
-const game=new Chess();
-
-const symbols={
- wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',
- bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'
-};
-
-let selected=null;
-let targets=[];
-let lastMove=null;
-let thinking=false;
-
+(()=>{
+const $=id=>document.getElementById(id),fa=n=>String(n).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+const MX='<svg viewBox="0 0 100 100"><path class="mx" pathLength="100" d="M22 22L78 78M78 22L22 78"/></svg>';
+const MO='<svg viewBox="0 0 100 100"><circle class="mo" pathLength="100" cx="50" cy="50" r="29"/></svg>';
+let b,turn,over,cpu=true,sc={X:0,O:0,D:0},lock=false;
+const cells=[];
+for(let i=0;i<9;i++){const c=document.createElement('button');c.className='cell';c.setAttribute('aria-label','خانه '+(i+1));c.addEventListener('click',()=>play(i));$('bd').append(c);cells.push(c)}
+function win(a){for(const l of L)if(a[l[0]]&&a[l[0]]===a[l[1]]&&a[l[0]]===a[l[2]])return{p:a[l[0]],l};return null}
 function render(){
- boardEl.innerHTML='';
- const position=game.board();
-
- for(let r=0;r<8;r++){
-  for(let c=0;c<8;c++){
-   const square=String.fromCharCode(97+c)+(8-r);
-   const piece=position[r][c];
-   const cell=document.createElement('button');
-
-   cell.className='square '+((r+c)%2===0?'light':'dark');
-   cell.setAttribute('aria-label',square);
-
-   if(lastMove&&(square===lastMove.from||square===lastMove.to))
-    cell.classList.add('last');
-   if(square===selected)cell.classList.add('selected');
-
-   const target=targets.find(m=>m.to===square);
-   if(target)cell.classList.add(piece?'capture':'hint');
-
-   if(piece){
-    const span=document.createElement('span');
-    span.className='piece '+(piece.color==='w'?'white':'black');
-    span.textContent=symbols[piece.color+piece.type];
-    cell.appendChild(span);
-   }
-
-   cell.addEventListener('click',()=>tapSquare(square));
-   boardEl.appendChild(cell);
-  }
- }
- updateStatus();
- updateHistory();
+ cells.forEach((c,i)=>{c.innerHTML=b[i]==='X'?MX:b[i]==='O'?MO:'';c.disabled=!!b[i]||over});
+ ['x','o'].forEach(k=>$('s'+k).classList.toggle('act',!over&&turn===k.toUpperCase()));
+ $('vx').textContent=fa(sc.X);$('vo').textContent=fa(sc.O);$('vd').textContent=fa(sc.D);
+ $('on').textContent=cpu?'کامپیوتر':'او';
 }
-
-function updateStatus(){
- if(game.in_checkmate()){
-  statusEl.textContent='مات! '+(game.turn()==='w'?'سیاه':'سفید')+' برنده شد 🏆';
- }else if(game.in_draw()){
-  statusEl.textContent='بازی مساوی شد 🤝';
- }else if(game.in_check()){
-  statusEl.textContent='کیش! نوبت '+(game.turn()==='w'?'سفید':'سیاه');
- }else if(thinking){
-  statusEl.textContent='کامپیوتر فکر می‌کند...';
- }else{
-  statusEl.textContent='نوبت '+(game.turn()==='w'?'سفید ⚪':'سیاه ⚫');
- }
+function status(t){$('st').textContent=t}
+function reset(){b=Array(9).fill('');turn='X';over=false;lock=false;cells.forEach(c=>c.classList.remove('win'));status('نوبت ایکس ✕');render()}
+function finish(){
+ const w=win(b);
+ if(w){over=true;sc[w.p]++;w.l.forEach(i=>cells[i].classList.add('win'));status(w.p==='X'?'ایکس برد! 🎉':(cpu?'کامپیوتر برد! 🤖':'او برد! 🎉'))}
+ else if(b.every(Boolean)){over=true;sc.D++;status('مساوی شد 🤝')}
+ else{turn=turn==='X'?'O':'X';status(turn==='X'?'نوبت ایکس ✕':(cpu?'کامپیوتر فکر می‌کنه…':'نوبت او ◯'))}
+ render();return over
 }
-
-function updateHistory(){
- const history=game.history();
- if(!history.length){
-  movesEl.textContent='هنوز حرکتی انجام نشده.';
-  return;
- }
- const rows=[];
- for(let i=0;i<history.length;i+=2){
-  rows.push((Math.floor(i/2)+1)+'. '+history[i]+
-    (history[i+1]?'  '+history[i+1]:''));
- }
- movesEl.textContent=rows.join(' | ');
+function play(i){
+ if(b[i]||over||lock)return;
+ b[i]=turn;
+ const ended=finish();
+ if(!ended&&cpu&&turn==='O'){lock=true;setTimeout(()=>{b[best()]='O';lock=false;finish()},550)}
 }
-
-function tapSquare(square){
- if(thinking||game.game_over())return;
- if(document.getElementById('mode').value==='ai'&&game.turn()==='b')return;
-
- const piece=game.get(square);
-
- if(selected){
-  const target=targets.find(m=>m.to===square);
-  if(target){
-   const result=game.move({
-    from:selected,to:square,promotion:'q'
-   });
-   if(result){
-    lastMove={from:result.from,to:result.to};
-    selected=null;
-    targets=[];
-    render();
-
-    if(!game.game_over()&&document.getElementById('mode').value==='ai'){
-     thinking=true;
-     updateStatus();
-     setTimeout(aiMove,350);
-    }
-    return;
-   }
-  }
- }
-
- if(piece&&piece.color===game.turn()){
-  selected=square;
-  targets=game.moves({square:square,verbose:true});
- }else{
-  selected=null;
-  targets=[];
- }
- render();
+function mm(a,p){
+ const w=win(a);if(w)return w.p==='O'?10:-10;
+ const e=a.map((v,i)=>v?-1:i).filter(i=>i>=0);if(!e.length)return 0;
+ let r=p==='O'?-99:99;
+ for(const i of e){a[i]=p;const s=mm(a,p==='O'?'X':'O');a[i]='';r=p==='O'?Math.max(r,s):Math.min(r,s)}
+ return r
 }
-
-/* حریف ساده با ارزیابی مهره‌ها و یک حرکت قانونی */
-function aiMove(){
- if(game.game_over()){
-  thinking=false;
-  render();
-  return;
- }
-
- const moves=game.moves({verbose:true});
- if(!moves.length){
-  thinking=false;
-  render();
-  return;
- }
-
- const value={p:100,n:320,b:330,r:500,q:900,k:20000};
-
- function evaluate(move){
-  let score=Math.random()*20;
-
-  if(move.captured)score+=value[move.captured]*1.2;
-  if(move.promotion)score+=800;
-  if(move.san.includes('+'))score+=45;
-  if(move.san.includes('#'))score+=100000;
-
-  // از حرکات کاملاً تصادفی کمی فاصله می‌گیریم
-  const centerSquares=['d4','e4','d5','e5'];
-  if(centerSquares.includes(move.to))score+=12;
-  if(move.piece==='n'||move.piece==='b')score+=5;
-
-  return score;
- }
-
- moves.sort((a,b)=>evaluate(b)-evaluate(a));
- const chosen=moves[0];
-
- const result=game.move({
-  from:chosen.from,
-  to:chosen.to,
-  promotion:'q'
- });
-
- if(result)lastMove={from:result.from,to:result.to};
-
- thinking=false;
- selected=null;
- targets=[];
- render();
+function best(){
+ const e=b.map((v,i)=>v?-1:i).filter(i=>i>=0);
+ if(Math.random()<.2)return e[Math.floor(Math.random()*e.length)];
+ let bi=e[0],bs=-99;
+ for(const i of e){b[i]='O';const s=mm(b,'X');b[i]='';if(s>bs){bs=s;bi=i}}
+ return bi
 }
-
-function undoMove(){
- if(thinking||!game.history().length)return;
-
- game.undo();
-
- if(document.getElementById('mode').value==='ai'&&game.history().length){
-  if(game.turn()==='b')game.undo();
- }
-
- const history=game.history({verbose:true});
- lastMove=history.length?
-  {from:history[history.length-1].from,to:history[history.length-1].to}:null;
-
- selected=null;
- targets=[];
- render();
-}
-
-function newGame(){
- game.reset();
- selected=null;
- targets=[];
- lastMove=null;
- thinking=false;
- render();
-}
-
-render();
+function mode(c){cpu=c;$('m-cpu').classList.toggle('on',c);$('m-two').classList.toggle('on',!c);sc={X:0,O:0,D:0};reset()}
+$('m-cpu').onclick=()=>mode(true);$('m-two').onclick=()=>mode(false);
+$('new').onclick=reset;$('rs').onclick=()=>{sc={X:0,O:0,D:0};reset()};
+reset();
+})();
 </script>
 </body>
 </html>
